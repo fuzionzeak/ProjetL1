@@ -1,0 +1,1 @@
+<?php echo "bienvenue page3"; ?>
