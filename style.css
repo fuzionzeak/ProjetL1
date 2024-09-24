@@ -1,0 +1,97 @@
+/* Style de base pour le corps */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Style pour le conteneur du formulaire */
+form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Style des titres */
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #4CAF50;
+}
+
+/* Style des étiquettes */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+/* Style des champs de saisie */
+input[type="text"],
+input[type="password"],
+input[type="file"],
+select {
+    width: calc(100% - 16px);
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="file"]:focus,
+select:focus {
+    border-color: #4CAF50;
+}
+
+/* Style des boutons radio et checkbox */
+input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Style du bouton d'envoi */
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Style pour les messages de succès */
+.success-message {
+    color: #4CAF50;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+/* Style des erreurs */
+.error-message {
+    color: #f44336;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 10px;
+}

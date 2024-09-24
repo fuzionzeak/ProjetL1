@@ -16,8 +16,8 @@ $gestionClub = new GestionClub($cnx);
 // Récupération des clubs pour les afficher en boutons
 $clubs = $gestionClub->getAllClubs();
 
-// ID_CLUB par défaut (changez la valeur par l'ID d'un club existant dans votre base)
-$idClubParDefaut = 1;
+// ID_CLUB par défaut (doit correspondre à un club existant)
+$idClubParDefaut = 1; // Changez ce numéro par un ID valide existant dans votre base
 
 // Traitement du formulaire d'inscription
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -29,8 +29,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $clubsChoisis = $_POST['clubs'] ?? [];
     $image = $_FILES['image'] ?? null;
 
-    // Définir ID_CLUB à partir de la sélection ou utiliser une valeur par défaut
+    // Utiliser le premier club sélectionné ou un club par défaut s'il n'y a rien
     $idClub = !empty($clubsChoisis) ? (int)$clubsChoisis[0] : $idClubParDefaut;
+
+    // Vérification que l'ID_CLUB existe dans la table CLUB
+    $stmtCheckClub = $cnx->prepare("SELECT COUNT(*) FROM CLUB WHERE ID_CLUB = :id_club");
+    $stmtCheckClub->bindParam(':id_club', $idClub, PDO::PARAM_INT);
+    $stmtCheckClub->execute();
+    $clubExists = $stmtCheckClub->fetchColumn() > 0;
+
+    if (!$clubExists) {
+        // Si l'ID_CLUB n'est pas valide, utilisez l'ID par défaut
+        $idClub = $idClubParDefaut;
+    }
 
     // Traitement de l'image de profil (sauvegarde dans un dossier, etc.)
     $imagePath = '';
@@ -62,9 +73,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($clubsChoisis)) {
         $stmtAbonnement = $cnx->prepare("INSERT INTO S_ABONNER (ID_UTI, ID_CLUB) VALUES (:id_uti, :id_club)");
         foreach ($clubsChoisis as $clubId) {
-            $stmtAbonnement->bindParam(':id_uti', $userId);
-            $stmtAbonnement->bindParam(':id_club', $clubId, PDO::PARAM_INT);
-            $stmtAbonnement->execute();
+            // Vérifier l'existence de chaque club avant d'insérer
+            $stmtCheckClub->bindParam(':id_club', $clubId, PDO::PARAM_INT);
+            $stmtCheckClub->execute();
+            $clubExists = $stmtCheckClub->fetchColumn() > 0;
+
+            if ($clubExists) {
+                $stmtAbonnement->bindParam(':id_uti', $userId);
+                $stmtAbonnement->bindParam(':id_club', $clubId, PDO::PARAM_INT);
+                $stmtAbonnement->execute();
+            }
         }
     }
 
@@ -72,16 +90,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Inscription</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -89,23 +103,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <form action="index.php?page=page2" method="POST" enctype="multipart/form-data">
     <label for="nom">Nom :</label>
-    <input type="text" id="nom" name="nom" required><br>
+    <input type="text" id="nom" name="nom" required>
 
     <label for="prenom">Prénom :</label>
-    <input type="text" id="prenom" name="prenom" required><br>
+    <input type="text" id="prenom" name="prenom" required>
 
     <label for="sexe">Sexe :</label>
     <select id="sexe" name="sexe" required>
         <option value="Homme">Homme</option>
         <option value="Femme">Femme</option>
         <option value="Autre">Autre</option>
-    </select><br>
+    </select>
 
     <label for="password">Mot de passe :</label>
-    <input type="password" id="password" name="password" required><br>
+    <input type="password" id="password" name="password" required>
 
     <label for="image">Image de profil :</label>
-    <input type="file" id="image" name="image" accept="image/*" required><br>
+    <input type="file" id="image" name="image" accept="image/*" required>
 
     <h3>Clubs préférés :</h3>
     <?php foreach ($clubs as $club): ?>
